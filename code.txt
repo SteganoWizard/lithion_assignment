@@ -1,0 +1,29 @@
+#include <xc.h>
+#define _XTAL_FREQ 20000000  // Define oscillator frequency
+
+void ADC_Init() {
+    ADCON0 = 0x41;  // Turn on the ADC module and select channel 0 (AN0)
+    ADCON1 = 0x0E;  // Configure AN0 as analog input and others as digital I/O
+}
+
+unsigned int ADC_Read() {
+    ADCON0 |= 0x04;  // Start conversion
+    while(ADCON0 & 0x04);  // Wait for conversion to complete
+    return ((ADRESH << 8) + ADRESL);  // Return the result
+}
+
+void main() {
+    unsigned int adcValue;
+    float voltage, inputVoltage;
+
+    ADC_Init();  // Initialize ADC module
+
+    while(1) {
+        adcValue = ADC_Read();  // Read ADC value
+        voltage = (adcValue * 5.0) / 1023.0;  // Convert to voltage (0-5V)
+        inputVoltage = voltage * 20;  // Scale back to 0-100V
+        
+        // Display or transmit the input voltage value
+        // e.g., send via UART, display on LCD, etc.
+    }
+}
